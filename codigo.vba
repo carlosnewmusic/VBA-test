@@ -13,6 +13,25 @@ Dim valor
 Dim msg
 Dim persona()
 'vaciar los spinner al cargar el formulario
+
+Private Sub CheckBox1_Click()
+    If (CheckBox1.Value) Then
+        Frame3.Visible = True
+    Else
+        Frame3.Visible = False
+    End If
+End Sub
+
+Private Sub CheckBox2_Click()
+    If (CheckBox2.Value) Then
+        Label21.Visible = True
+        ComboBox4.Visible = True
+    Else
+        Label21.Visible = False
+        ComboBox4.Visible = False
+    End If
+End Sub
+
 'Tipo de Documento
 Private Sub ComboBox1_Change()
     TextBox4.Visible = True
@@ -60,35 +79,143 @@ Private Sub CommandButton2_Click()
     ComboBox3.Clear
     Call Borrar
 End Sub
-
-
-Private Sub Label14_Click()
-    
+Private Sub CommandButton3_Click()
+l = ultimaLinea()
+nom = TextBox18.Value
+sex = ""
+prov = ""
+    If (nom = "" And CheckBox1.Value = False And CheckBox2.Value = False) Then
+        MsgBox ("Ingrese un valor para buscar")
+    Else
+        If (CheckBox1.Value Or CheckBox2.Value) Then
+            If (CheckBox1.Value) Then
+                If (OptionButton3.Value) Then
+                    sex = "Hombre"
+                    'MsgBox ("sexo masculino")
+                ElseIf (OptionButton4.Value) Then
+                    sex = "Mujer"
+                    'MsgBox ("sexo femenino")
+                Else
+                    MsgBox ("Falta sexo")
+                End If
+            End If
+            If (CheckBox2.Value) Then
+                If (ComboBox4.Value = "") Then
+                    MsgBox ("Seleccione una provincia")
+                Else
+                    prov = ComboBox4.Value
+                End If
+            End If
+        'Else
+            'persona = buscar(nom, sex, prov)
+        End If
+        Call buscar(UCase(Trim(nom)), UCase(Trim(sex)), UCase(Trim(prov)))
+    ListBox1.List = persona
+    End If
 End Sub
-
-
+Sub buscar(ByVal nombre, ByVal sexo, ByVal provincia)
+l = ultimaLinea()
+line = 0
+Dim p()
+ReDim persona(l - 2, 15)
+    For i = 1 To l
+        For j = 1 To 15
+            If (nombre <> "") Then
+                    If (sexo = "" And provincia = "") Then
+                        If (StrComp(nombre, UCase(Cells(i, j).Value)) = 0) Then
+                            For k = 1 To 15
+                                persona(line, k - 1) = Cells(i, k).Value
+                                j = j + 1
+                            Next
+                            line = line + 1
+                        End If
+                    ElseIf (sexo <> "" And provincia = "") Then
+                        If (StrComp(nombre, UCase(Cells(i, j).Value)) = 0 And StrComp(UCase(sexo), UCase(Cells(i, 5).Value)) = 0) Then
+                            For k = 1 To 15
+                                persona(line, k - 1) = Cells(i, k).Value
+                                j = j + 1
+                            Next
+                            line = line + 1
+                        End If
+                    ElseIf (sexo = "" And provincia <> "") Then
+                        If (StrComp(nombre, UCase(Cells(i, j).Value)) = 0 And StrComp(UCase(provincia), UCase(Cells(i, 7).Value)) = 0) Then
+                            For k = 1 To 15
+                                persona(line, k - 1) = Cells(i, k).Value
+                                j = j + 1
+                            Next
+                            line = line + 1
+                        End If
+                    ElseIf (sexo <> "" And provincia <> "") Then
+                        If (StrComp(nombre, UCase(Cells(i, j).Value)) = 0 And StrComp(UCase(sexo), UCase(Cells(i, 5).Value)) = 0 And StrComp(provincia, Cells(i, 7).Value) = 0) Then
+                            For k = 1 To 15
+                                persona(line, k - 1) = Cells(i, k).Value
+                                j = j + 1
+                            Next
+                            line = line + 1
+                        End If
+                    End If
+            Else
+                    If (sexo <> "" And provincia = "") Then
+                        If (StrComp(UCase(sexo), UCase(Cells(i, 5).Value)) = 0) Then
+                            For k = 1 To 15
+                                persona(line, k - 1) = Cells(i, k).Value
+                                j = j + 1
+                            Next
+                            line = line + 1
+                        End If
+                    ElseIf (sexo = "" And provincia <> "") Then
+                        If (StrComp(UCase(provincia), UCase(Cells(i, 7).Value)) = 0) Then
+                            For k = 1 To 15
+                                persona(line, k - 1) = Cells(i, k).Value
+                                j = j + 1
+                            Next
+                            line = line + 1
+                        End If
+                    ElseIf (sexo <> "" And provincia <> "") Then
+                        If (StrComp(UCase(sexo), UCase(Cells(i, 5).Value)) = 0 And StrComp(provincia, UCase(Cells(i, 7).Value)) = 0) Then
+                            For k = 1 To 15
+                                persona(line, k - 1) = Cells(i, k).Value
+                                j = j + 1
+                            Next
+                            line = line + 1
+                        End If
+                    End If
+            End If
+        Next
+    Next
+End Sub
 Private Sub Label17_Click()
     MsgBox ("Introduzca su documento de identidad sin espacios entre numeros y letras")
 End Sub
-Private Sub TextBox11_Change()
-    Frame2.Visible = True
+Private Sub ListBox1_Click()
+    index = ListBox1.ListIndex
+    valor = ListBox1.Column(0)
+    MsgBox (CStr(index) + vbCr + CStr(valor))
+    'ListBox1.Column(index))
+    m = MsgBox("Desea Modificar este usuario", vbOKCancel)
+    If (m = 1) Then
+        MultiPage1.Pages(2).Visible = True
+    Else
+        MultiPage1.Pages(2).Visible = False
+    End If
 End Sub
 
 
+Private Sub TextBox11_Change()
+    Frame2.Visible = True
+End Sub
 Private Sub TextBox14_Change()
     If Len(TextBox14) > 4 Then
         TextBox14 = Left(TextBox14.Text, 4)
         TextBox14.SelStart = 4
     End If
 End Sub
-
 Private Sub TextBox15_Change()
     If Len(TextBox15) > 4 Then
         TextBox15 = Left(TextBox15.Text, 4)
         TextBox15.SelStart = 4
     End If
 End Sub
-
 Private Sub TextBox16_Change()
     If Len(TextBox16) > 2 Then
         TextBox16 = Left(TextBox16.Text, 2)
@@ -165,9 +292,9 @@ Sub Borrar()
     ComboBox1.AddItem "NIE"
     'ComboBox1.AddItem "Pasaporte"
     ComboBox2.AddItem "Calle"
-    ComboBox2.AddItem "Avenida"
+    ComboBox2.AddItem "Avenide"
     ComboBox2.AddItem "Otro"
-    ComboBox1.Visible = False 'carlosnewmusic para que activas y desactivas?
+    ComboBox1.Visible = False
     ComboBox2.Visible = False
     ComboBox3.Visible = False
     ComboBox1.Visible = True
@@ -180,7 +307,7 @@ Sub Borrar()
     TextBox9.Visible = False
     TextBox10.Visible = False
     TextBox11.Visible = False
-    'TextBox11.Visible = False carlosnewmusic que verga es esto?
+    TextBox11.Visible = False
     
     Label17.Visible = False
     
@@ -238,106 +365,59 @@ Sub Borrar()
     ComboBox3.AddItem "Melilla"
     Frame2.Visible = False
     
-End Sub
-Sub borrar2() 'cambiado carlosnewmusic
-    ComboBox7.Clear
-    ComboBox6.Clear
-    ComboBox5.Clear
-    
-    OptionButton5.Value = False
-    OptionButton6.Value = False
-    
-    TextBox25 = ""
-    TextBox26 = ""
-    TextBox27 = ""
-    TextBox28 = ""
-    TextBox29 = ""
-    TextBox30 = ""
-    TextBox31 = ""
-    TextBox32 = ""
-    TextBox33 = ""
-    TextBox34 = ""
-    TextBox35 = ""
-    TextBox36 = Date
-    TextBox37 = ""
-    TextBox38 = ""
-    TextBox39 = ""
-    TextBox40 = ""
-    
-    ComboBox5.AddItem "DNI" 'cambiado carlosnewmusic
-    ComboBox5.AddItem "NIE"
-    'ComboBox5.AddItem "Pasaporte"
-    ComboBox6.AddItem "Calle"
-    ComboBox6.AddItem "Avenida"
-    ComboBox6.AddItem "Plaza"
-    ComboBox6.AddItem "Otro"
-    
-    ComboBox5.Visible = True
-    ComboBox6.Visible = False
-    ComboBox7.Visible = False
-    
-    
-    TextBox28.Visible = False
-    TextBox29.Visible = False
-    TextBox30.Visible = False
-    TextBox31.Visible = False
-    TextBox32.Visible = False
-    TextBox33.Visible = False
-    TextBox34.Visible = False
-    TextBox35.Visible = False
-
-    ComboBox7.AddItem "Álava"
-    ComboBox7.AddItem "Albacete"
-    ComboBox7.AddItem "Alicante"
-    ComboBox7.AddItem "Almería"
-    ComboBox7.AddItem "Ávila"
-    ComboBox7.AddItem "Badajoz"
-    ComboBox7.AddItem "Baleares"
-    ComboBox7.AddItem "Barcelona"
-    ComboBox7.AddItem "Burgos"
-    ComboBox7.AddItem "Cáceres"
-    ComboBox7.AddItem "Cádiz"
-    ComboBox7.AddItem "Castellón"
-    ComboBox7.AddItem "Ciudad Real"
-    ComboBox7.AddItem "Córdoba"
-    ComboBox7.AddItem "Coruña"
-    ComboBox7.AddItem "Cuenca"
-    ComboBox7.AddItem "Gerona"
-    ComboBox7.AddItem "Granada"
-    ComboBox7.AddItem "Guadalajara"
-    ComboBox7.AddItem "Guipúzcoa"
-    ComboBox7.AddItem "Huelva"
-    ComboBox7.AddItem "Huesca"
-    ComboBox7.AddItem "Jaén"
-    ComboBox7.AddItem "León"
-    ComboBox7.AddItem "Lérida"
-    ComboBox7.AddItem "La Rioja"
-    ComboBox7.AddItem "Lugo"
-    ComboBox7.AddItem "Madrid"
-    ComboBox7.AddItem "Málaga"
-    ComboBox7.AddItem "Murcia"
-    ComboBox7.AddItem "Navarra"
-    ComboBox7.AddItem "Orense"
-    ComboBox7.AddItem "Asturias"
-    ComboBox7.AddItem "Palencia"
-    ComboBox7.AddItem "Las Palmas"
-    ComboBox7.AddItem "Pontevedra"
-    ComboBox7.AddItem "Salamanca"
-    ComboBox7.AddItem "Santa Cruz de Tenerife"
-    ComboBox7.AddItem "Cantabria"
-    ComboBox7.AddItem "Segovia"
-    ComboBox7.AddItem "Sevilla"
-    ComboBox7.AddItem "Soria"
-    ComboBox7.AddItem "Tarragona"
-    ComboBox7.AddItem "Teruel"
-    ComboBox7.AddItem "Toledo"
-    ComboBox7.AddItem "Valencia"
-    ComboBox7.AddItem "Valladolid"
-    ComboBox7.AddItem "Vizcaya"
-    ComboBox7.AddItem "Zamora"
-    ComboBox7.AddItem "Zaragoza"
-    ComboBox7.AddItem "Ceuta"
-    ComboBox7.AddItem "Melilla"
+    'cambiado
+    ComboBox4.AddItem "Álava"
+    ComboBox4.AddItem "Albacete"
+    ComboBox4.AddItem "Alicante"
+    ComboBox4.AddItem "Almería"
+    ComboBox4.AddItem "Ávila"
+    ComboBox4.AddItem "Badajoz"
+    ComboBox4.AddItem "Baleares"
+    ComboBox4.AddItem "Barcelona"
+    ComboBox4.AddItem "Burgos"
+    ComboBox4.AddItem "Cáceres"
+    ComboBox4.AddItem "Cádiz"
+    ComboBox4.AddItem "Castellón"
+    ComboBox4.AddItem "Ciudad Real"
+    ComboBox4.AddItem "Córdoba"
+    ComboBox4.AddItem "Coruña"
+    ComboBox4.AddItem "Cuenca"
+    ComboBox4.AddItem "Gerona"
+    ComboBox4.AddItem "Granada"
+    ComboBox4.AddItem "Guadalajara"
+    ComboBox4.AddItem "Guipúzcoa"
+    ComboBox4.AddItem "Huelva"
+    ComboBox4.AddItem "Huesca"
+    ComboBox4.AddItem "Jaén"
+    ComboBox4.AddItem "León"
+    ComboBox4.AddItem "Lérida"
+    ComboBox4.AddItem "La Rioja"
+    ComboBox4.AddItem "Lugo"
+    ComboBox4.AddItem "Madrid"
+    ComboBox4.AddItem "Málaga"
+    ComboBox4.AddItem "Murcia"
+    ComboBox4.AddItem "Navarra"
+    ComboBox4.AddItem "Orense"
+    ComboBox4.AddItem "Asturias"
+    ComboBox4.AddItem "Palencia"
+    ComboBox4.AddItem "Las Palmas"
+    ComboBox4.AddItem "Pontevedra"
+    ComboBox4.AddItem "Salamanca"
+    ComboBox4.AddItem "Santa Cruz de Tenerife"
+    ComboBox4.AddItem "Cantabria"
+    ComboBox4.AddItem "Segovia"
+    ComboBox4.AddItem "Sevilla"
+    ComboBox4.AddItem "Soria"
+    ComboBox4.AddItem "Tarragona"
+    ComboBox4.AddItem "Teruel"
+    ComboBox4.AddItem "Toledo"
+    ComboBox4.AddItem "Valencia"
+    ComboBox4.AddItem "Valladolid"
+    ComboBox4.AddItem "Vizcaya"
+    ComboBox4.AddItem "Zamora"
+    ComboBox4.AddItem "Zaragoza"
+    ComboBox4.AddItem "Ceuta"
+    ComboBox4.AddItem "Melilla"
 End Sub
 Sub recogerCampos()
     l = ultimaLinea()
@@ -529,56 +609,3 @@ arr(22) = "E"
     comprobarCampos = msg
 End Function
 
-'1   Álava
-'2   Albacete
-'3   Alicante
-'4   Almería
-'5   Ávila
-'6   Badajoz
-'7   Baleares
-'8   Barcelona
-'9   Burgos
-'10  Cáceres
-'11  Cádiz
-'12  Castellón
-'13  ciudad Real
-'14  Córdoba
-'15  Coruña
-'16  Cuenca
-'17  Gerona
-'18  Granada
-'19  Guadalajara
-'20  Guipúzcoa
-'21  Huelva
-'22  Huesca
-'23  Jaén
-'24  León
-'25  Lérida
-'26  La Rioja
-'27  Lugo
-'28  Madrid
-'29  Málaga
-'30  Murcia
-'31  Navarra
-'32  Orense
-'33  Asturias
-'34  Palencia
-'35  Las Palmas
-'36  Pontevedra
-'37  Salamanca
-'38  Santa Cruz de Tenerife
-'39  Cantabria
-'40  Segovia
-'41  Sevilla
-'42  Soria
-'43  Tarragona
-'44  Teruel
-'45  Toledo
-'46  Valencia
-'47  Valladolid
-'48  Vizcaya
-'49  Zamora
-'50  Zaragoza
-'51  Ceuta
-'52  Melilla
-'14-17
