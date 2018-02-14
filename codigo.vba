@@ -13,6 +13,25 @@ Dim valor
 Dim msg
 Dim persona()
 'vaciar los spinner al cargar el formulario
+
+Private Sub CheckBox1_Click()
+    If (CheckBox1.Value) Then
+        Frame3.Visible = True
+    Else
+        Frame3.Visible = False
+    End If
+End Sub
+
+Private Sub CheckBox2_Click()
+    If (CheckBox2.Value) Then
+        Label21.Visible = True
+        ComboBox4.Visible = True
+    Else
+        Label21.Visible = False
+        ComboBox4.Visible = False
+    End If
+End Sub
+
 'Tipo de Documento
 Private Sub ComboBox1_Change()
     TextBox4.Visible = True
@@ -41,6 +60,12 @@ Private Sub ComboBox2_Change()
     TextBox12.Visible = True
     TextBox99.Enabled = False
 End Sub
+
+
+Private Sub ComboBox7_Change()
+
+End Sub
+
 'Boton de guardado
 Private Sub CommandButton1_Click()
 msg = ""
@@ -60,46 +85,203 @@ Private Sub CommandButton2_Click()
     ComboBox3.Clear
     Call Borrar
 End Sub
-
-
-Private Sub Label14_Click()
-    
+Private Sub CommandButton3_Click()
+l = ultimaLinea()
+nom = TextBox18.Value
+sex = ""
+prov = ""
+    If (nom = "" And CheckBox1.Value = False And CheckBox2.Value = False) Then
+        MsgBox ("Ingrese un valor para buscar")
+    Else
+        If (CheckBox1.Value Or CheckBox2.Value) Then
+            If (CheckBox1.Value) Then
+                If (OptionButton3.Value) Then
+                    sex = "Hombre"
+                    'MsgBox ("sexo masculino")
+                ElseIf (OptionButton4.Value) Then
+                    sex = "Mujer"
+                    'MsgBox ("sexo femenino")
+                Else
+                    MsgBox ("Falta sexo")
+                End If
+            End If
+            If (CheckBox2.Value) Then
+                If (ComboBox4.Value = "") Then
+                    MsgBox ("Seleccione una provincia")
+                Else
+                    prov = ComboBox4.Value
+                End If
+            End If
+        'Else
+            'persona = buscar(nom, sex, prov)
+        End If
+        Call buscar(UCase(Trim(nom)), UCase(Trim(sex)), UCase(Trim(prov)))
+    ListBox1.List = persona
+    End If
+End Sub
+Sub buscar(ByVal nombre, ByVal sexo, ByVal provincia)
+l = ultimaLinea()
+line = 0
+Dim p()
+ReDim persona(l - 2, 15)
+    For i = 1 To l
+        For j = 1 To 15
+            If (nombre <> "") Then
+                    If (sexo = "" And provincia = "") Then
+                        If (StrComp(nombre, UCase(Cells(i, j).Value)) = 0) Then
+                            For k = 1 To 15
+                                persona(line, k - 1) = Cells(i, k).Value
+                                j = j + 1
+                            Next
+                            line = line + 1
+                        End If
+                    ElseIf (sexo <> "" And provincia = "") Then
+                        If (StrComp(nombre, UCase(Cells(i, j).Value)) = 0 And StrComp(UCase(sexo), UCase(Cells(i, 5).Value)) = 0) Then
+                            For k = 1 To 15
+                                persona(line, k - 1) = Cells(i, k).Value
+                                j = j + 1
+                            Next
+                            line = line + 1
+                        End If
+                    ElseIf (sexo = "" And provincia <> "") Then
+                        If (StrComp(nombre, UCase(Cells(i, j).Value)) = 0 And StrComp(UCase(provincia), UCase(Cells(i, 7).Value)) = 0) Then
+                            For k = 1 To 15
+                                persona(line, k - 1) = Cells(i, k).Value
+                                j = j + 1
+                            Next
+                            line = line + 1
+                        End If
+                    ElseIf (sexo <> "" And provincia <> "") Then
+                        If (StrComp(nombre, UCase(Cells(i, j).Value)) = 0 And StrComp(UCase(sexo), UCase(Cells(i, 5).Value)) = 0 And StrComp(provincia, Cells(i, 7).Value) = 0) Then
+                            For k = 1 To 15
+                                persona(line, k - 1) = Cells(i, k).Value
+                                j = j + 1
+                            Next
+                            line = line + 1
+                        End If
+                    End If
+            Else
+                    If (sexo <> "" And provincia = "") Then
+                        If (StrComp(UCase(sexo), UCase(Cells(i, 5).Value)) = 0) Then
+                            For k = 1 To 15
+                                persona(line, k - 1) = Cells(i, k).Value
+                                j = j + 1
+                            Next
+                            line = line + 1
+                        End If
+                    ElseIf (sexo = "" And provincia <> "") Then
+                        If (StrComp(UCase(provincia), UCase(Cells(i, 7).Value)) = 0) Then
+                            For k = 1 To 15
+                                persona(line, k - 1) = Cells(i, k).Value
+                                j = j + 1
+                            Next
+                            line = line + 1
+                        End If
+                    ElseIf (sexo <> "" And provincia <> "") Then
+                        If (StrComp(UCase(sexo), UCase(Cells(i, 5).Value)) = 0 And StrComp(provincia, UCase(Cells(i, 7).Value)) = 0) Then
+                            For k = 1 To 15
+                                persona(line, k - 1) = Cells(i, k).Value
+                                j = j + 1
+                            Next
+                            line = line + 1
+                        End If
+                    End If
+            End If
+        Next
+    Next
 End Sub
 
+Private Sub CommandButton4_Click()
+    Call Borrar2
+    'Rows(index).EntireRow.Delete
+    Rows(10).EntireRow.Delete
+End Sub
+
+Private Sub CommandButton5_Click()
+    'Buscar posicion que ocupa en la lista
+    Dim i As Integer
+    Dim posicion As Integer
+    Dim salir As Boolean
+    salir = False
+    i = 2
+    Do While (salir = False)
+        If (Hoja1.Cells(i, 1) = TextBox172.Value) Then
+            posicion = i
+            salir = True
+        End If
+        i = i + 1
+    Loop
+    Hoja1.Cells(posicion, 2).Value = TextBox162
+    Hoja1.Cells(posicion, 3).Value = TextBox163
+    Hoja1.Cells(posicion, 4).Value = TextBox171
+    'Hoja1.Cells(posicion, 5).Value
+    Hoja1.Cells(posicion, 6).Value = TextBox164
+    Hoja1.Cells(posicion, 7).Value = ComboBox6.Value
+    Hoja1.Cells(posicion, 8).Value = TextBox166
+    Hoja1.Cells(posicion, 9).Value = ComboBox5.Value & TextBox165
+    Hoja1.Cells(posicion, 10).Value = TextBox168
+    Hoja1.Cells(posicion, 11).Value = TextBox169
+    Hoja1.Cells(posicion, 12).Value = TextBox167 & TextBox178
+    Hoja1.Cells(posicion, 13).Value = TextBox177
+    Hoja1.Cells(posicion, 14).Value = TextBox170
+    Hoja1.Cells(posicion, 15).Value = TextBox173.Value + "-" + TextBox174.Value + "-" + TextBox175.Value + "-" + TextBox176.Value
+End Sub
 
 Private Sub Label17_Click()
     MsgBox ("Introduzca su documento de identidad sin espacios entre numeros y letras")
 End Sub
-Private Sub TextBox11_Change()
-    Frame2.Visible = True
+Private Sub ListBox1_Click()
+    index = ListBox1.ListIndex
+    'valor = ListBox1.Column(0)
+    'MsgBox (CStr(index) + vbCr + CStr(valor))
+    'ListBox1.Column(index))
+    m = MsgBox("Desea Modificar este usuario", vbOKCancel)
+    If (m = 1) Then
+        MultiPage1.Pages(2).Visible = True
+        'MsgBox persona(index, 0)
+        Call modificar(index)
+        'Forms!UserForm2!TextBox162.SetFocus
+    Else
+        MultiPage1.Pages(2).Visible = False
+    End If
 End Sub
 
 
+
+
+Private Sub TextBox11_Change()
+    Frame2.Visible = True
+End Sub
 Private Sub TextBox14_Change()
     If Len(TextBox14) > 4 Then
         TextBox14 = Left(TextBox14.Text, 4)
         TextBox14.SelStart = 4
     End If
 End Sub
-
 Private Sub TextBox15_Change()
     If Len(TextBox15) > 4 Then
         TextBox15 = Left(TextBox15.Text, 4)
         TextBox15.SelStart = 4
     End If
 End Sub
-
 Private Sub TextBox16_Change()
     If Len(TextBox16) > 2 Then
         TextBox16 = Left(TextBox16.Text, 2)
         TextBox16.SelStart = 2
     End If
 End Sub
+
+
+
 Private Sub TextBox17_Change()
     If Len(TextBox17) > 10 Then
         TextBox17 = Left(TextBox17.Text, 10)
         TextBox17.SelStart = 10
     End If
+End Sub
+
+Private Sub TextBox170_Change()
+
 End Sub
 
 Private Sub TextBox4_Change()
@@ -135,6 +317,7 @@ Next
 
     'MsgBox (linea)
     Call Borrar
+    Call Borrar2
 End Sub
 Sub Borrar()
     ComboBox1.Clear
@@ -165,9 +348,9 @@ Sub Borrar()
     ComboBox1.AddItem "NIE"
     'ComboBox1.AddItem "Pasaporte"
     ComboBox2.AddItem "Calle"
-    ComboBox2.AddItem "Avenida"
+    ComboBox2.AddItem "Avenide"
     ComboBox2.AddItem "Otro"
-    ComboBox1.Visible = False 'carlosnewmusic para que activas y desactivas?
+    ComboBox1.Visible = False
     ComboBox2.Visible = False
     ComboBox3.Visible = False
     ComboBox1.Visible = True
@@ -180,7 +363,7 @@ Sub Borrar()
     TextBox9.Visible = False
     TextBox10.Visible = False
     TextBox11.Visible = False
-    'TextBox11.Visible = False carlosnewmusic que verga es esto?
+    TextBox11.Visible = False
     
     Label17.Visible = False
     
@@ -238,8 +421,7 @@ Sub Borrar()
     ComboBox3.AddItem "Melilla"
     Frame2.Visible = False
     
-    'harley
-     'cambiado
+    'cambiado
     ComboBox4.AddItem "Álava"
     ComboBox4.AddItem "Albacete"
     ComboBox4.AddItem "Alicante"
@@ -292,107 +474,6 @@ Sub Borrar()
     ComboBox4.AddItem "Zaragoza"
     ComboBox4.AddItem "Ceuta"
     ComboBox4.AddItem "Melilla"
-    
-    'carlosnewmusic
-    ComboBox7.Clear
-    ComboBox6.Clear
-    ComboBox5.Clear
-    
-    OptionButton5.Value = False
-    OptionButton6.Value = False
-    
-    TextBox25 = ""
-    TextBox26 = ""
-    TextBox27 = ""
-    TextBox28 = ""
-    TextBox29 = ""
-    TextBox30 = ""
-    TextBox31 = ""
-    TextBox32 = ""
-    TextBox33 = ""
-    TextBox34 = ""
-    TextBox35 = ""
-    TextBox36 = Date
-    TextBox37 = ""
-    TextBox38 = ""
-    TextBox39 = ""
-    TextBox40 = ""
-    
-    ComboBox5.AddItem "DNI" 'cambiado carlosnewmusic
-    ComboBox5.AddItem "NIE"
-    'ComboBox5.AddItem "Pasaporte"
-    ComboBox6.AddItem "Calle"
-    ComboBox6.AddItem "Avenida"
-    ComboBox6.AddItem "Plaza"
-    ComboBox6.AddItem "Otro"
-    
-    ComboBox5.Visible = True
-    ComboBox6.Visible = False
-    ComboBox7.Visible = False
-    
-    
-    TextBox28.Visible = False
-    TextBox29.Visible = False
-    TextBox30.Visible = False
-    TextBox31.Visible = False
-    TextBox32.Visible = False
-    TextBox33.Visible = False
-    TextBox34.Visible = False
-    TextBox35.Visible = False
-
-    ComboBox7.AddItem "Álava"
-    ComboBox7.AddItem "Albacete"
-    ComboBox7.AddItem "Alicante"
-    ComboBox7.AddItem "Almería"
-    ComboBox7.AddItem "Ávila"
-    ComboBox7.AddItem "Badajoz"
-    ComboBox7.AddItem "Baleares"
-    ComboBox7.AddItem "Barcelona"
-    ComboBox7.AddItem "Burgos"
-    ComboBox7.AddItem "Cáceres"
-    ComboBox7.AddItem "Cádiz"
-    ComboBox7.AddItem "Castellón"
-    ComboBox7.AddItem "Ciudad Real"
-    ComboBox7.AddItem "Córdoba"
-    ComboBox7.AddItem "Coruña"
-    ComboBox7.AddItem "Cuenca"
-    ComboBox7.AddItem "Gerona"
-    ComboBox7.AddItem "Granada"
-    ComboBox7.AddItem "Guadalajara"
-    ComboBox7.AddItem "Guipúzcoa"
-    ComboBox7.AddItem "Huelva"
-    ComboBox7.AddItem "Huesca"
-    ComboBox7.AddItem "Jaén"
-    ComboBox7.AddItem "León"
-    ComboBox7.AddItem "Lérida"
-    ComboBox7.AddItem "La Rioja"
-    ComboBox7.AddItem "Lugo"
-    ComboBox7.AddItem "Madrid"
-    ComboBox7.AddItem "Málaga"
-    ComboBox7.AddItem "Murcia"
-    ComboBox7.AddItem "Navarra"
-    ComboBox7.AddItem "Orense"
-    ComboBox7.AddItem "Asturias"
-    ComboBox7.AddItem "Palencia"
-    ComboBox7.AddItem "Las Palmas"
-    ComboBox7.AddItem "Pontevedra"
-    ComboBox7.AddItem "Salamanca"
-    ComboBox7.AddItem "Santa Cruz de Tenerife"
-    ComboBox7.AddItem "Cantabria"
-    ComboBox7.AddItem "Segovia"
-    ComboBox7.AddItem "Sevilla"
-    ComboBox7.AddItem "Soria"
-    ComboBox7.AddItem "Tarragona"
-    ComboBox7.AddItem "Teruel"
-    ComboBox7.AddItem "Toledo"
-    ComboBox7.AddItem "Valencia"
-    ComboBox7.AddItem "Valladolid"
-    ComboBox7.AddItem "Vizcaya"
-    ComboBox7.AddItem "Zamora"
-    ComboBox7.AddItem "Zaragoza"
-    ComboBox7.AddItem "Ceuta"
-    ComboBox7.AddItem "Melilla"
-    
 End Sub
 Sub recogerCampos()
     l = ultimaLinea()
@@ -425,18 +506,18 @@ Sub dibujarLineas(ByVal l As Integer)
     Next
 End Sub
 Function ultimaLinea() 'ByVal Hoja As String)
-Dim Salir As Boolean
+Dim salir As Boolean
 Dim linea As Integer
-    Salir = True
+    salir = True
     l = 1
     Do
         If (Cells(l, 2).Value = "") Then
             ultimaLinea = l
-            Salir = False
+            salir = False
         Else
             l = l + 1
         End If
-    Loop While (Salir)
+    Loop While (salir)
 End Function
 Function comprobarCampos()
 Dim arr(23) As String
@@ -584,294 +665,86 @@ arr(22) = "E"
     comprobarCampos = msg
 End Function
 
-
-
-'desde aqui harley
-Private Sub CheckBox1_Click()
-    If (CheckBox1.Value) Then
-        Frame3.Visible = True
-    Else
-        Frame3.Visible = False
-    End If
-End Sub
-
-Private Sub CheckBox2_Click()
-
-End Sub
-    If (CheckBox2.Value) Then
-        Label21.Visible = True
-        ComboBox4.Visible = True
-    Else
-        Label21.Visible = False
-        ComboBox4.Visible = False
-    End If
-End Sub
-Private Sub CommandButton3_Click()
-l = ultimaLinea()
-nom = TextBox20.Value
-sex = ""
-prov = ""
-    If (nom = "" And CheckBox1.Value = False And CheckBox2.Value = False) Then
-        MsgBox ("Ingrese un valor para buscar")
-    Else
-        If (CheckBox1.Value Or CheckBox2.Value) Then
-            If (CheckBox1.Value) Then
-                If (OptionButton3.Value) Then
-                    sex = "Hombre"
-                    'MsgBox ("sexo masculino")
-                ElseIf (OptionButton4.Value) Then
-                    sex = "Mujer"
-                    'MsgBox ("sexo femenino")
-                Else
-                    MsgBox ("Falta sexo")
-                End If
-            End If
-            If (CheckBox2.Value) Then
-                If (ComboBox4.Value = "") Then
-                    MsgBox ("Seleccione una provincia")
-                Else
-                    prov = ComboBox4.Value
-                End If
-            End If
-        'Else
-            'persona = buscar(nom, sex, prov)
-        End If
-        Call buscar(UCase(Trim(nom)), UCase(Trim(sex)), UCase(Trim(prov)))
+Sub Borrar2()
+    ComboBox1.Clear
+    ComboBox2.Clear
+    ComboBox3.Clear
+    
+    OptionButton1.Value = False
+    OptionButton2.Value = False
+    
+    TextBox162 = ""
+    TextBox163 = ""
+    TextBox164 = ""
+    TextBox165 = ""
+    TextBox166 = ""
+    TextBox171 = ""
+    TextBox165 = ""
+    TextBox168 = ""
+    TextBox169 = ""
+    TextBox167 = ""
+    TextBox178 = ""
+    TextBox177 = ""
+    TextBox170 = ""
+    TextBox172 = ""
+    TextBox173.Value = ""
+    TextBox174.Value = ""
+    TextBox175.Value = ""
+    TextBox176.Value = ""
+    
+    ComboBox7.Clear
+    ComboBox7 = ""
+    ComboBox5.Clear
+    ComboBox5 = ""
+    
+    Label17.Visible = False
+    
+    ComboBox6.Clear
+    ComboBox6 = ""
+    OptionButton5.Value = False
+    OptionButton6.Value = False
+    Frame2.Visible = False
+    TextBox18 = ""
+    ReDim persona(0)
     ListBox1.List = persona
-    End If
+    'Call buscar(UCase(Trim("XXX")), UCase(Trim("")), UCase(Trim("")))
+
 End Sub
-Sub buscar(ByVal nombre, ByVal sexo, ByVal provincia)
-l = ultimaLinea()
-Line = 0
-Dim p()
-ReDim persona(l - 2, 15)
-    For i = 1 To l
-        For j = 1 To 15
-            If (nombre <> "") Then
-                    If (sexo = "" And provincia = "") Then
-                        If (StrComp(nombre, UCase(Cells(i, j).Value)) = 0) Then
-                            For k = 1 To 15
-                                persona(Line, k - 1) = Cells(i, k).Value
-                                j = j + 1
-                            Next
-                            Line = Line + 1
-                        End If
-                    ElseIf (sexo <> "" And provincia = "") Then
-                        If (StrComp(nombre, UCase(Cells(i, j).Value)) = 0 And StrComp(UCase(sexo), UCase(Cells(i, 5).Value)) = 0) Then
-                            For k = 1 To 15
-                                persona(Line, k - 1) = Cells(i, k).Value
-                                j = j + 1
-                            Next
-                            Line = Line + 1
-                        End If
-                    ElseIf (sexo = "" And provincia <> "") Then
-                        If (StrComp(nombre, UCase(Cells(i, j).Value)) = 0 And StrComp(UCase(provincia), UCase(Cells(i, 7).Value)) = 0) Then
-                            For k = 1 To 15
-                                persona(Line, k - 1) = Cells(i, k).Value
-                                j = j + 1
-                            Next
-                            Line = Line + 1
-                        End If
-                    ElseIf (sexo <> "" And provincia <> "") Then
-                        If (StrComp(nombre, UCase(Cells(i, j).Value)) = 0 And StrComp(UCase(sexo), UCase(Cells(i, 5).Value)) = 0 And StrComp(provincia, Cells(i, 7).Value) = 0) Then
-                            For k = 1 To 15
-                                persona(Line, k - 1) = Cells(i, k).Value
-                                j = j + 1
-                            Next
-                            Line = Line + 1
-                        End If
-                    End If
-            Else
-                    If (sexo <> "" And provincia = "") Then
-                        If (StrComp(UCase(sexo), UCase(Cells(i, 5).Value)) = 0) Then
-                            For k = 1 To 15
-                                persona(Line, k - 1) = Cells(i, k).Value
-                                j = j + 1
-                            Next
-                            Line = Line + 1
-                        End If
-                    ElseIf (sexo = "" And provincia <> "") Then
-                        If (StrComp(UCase(provincia), UCase(Cells(i, 7).Value)) = 0) Then
-                            For k = 1 To 15
-                                persona(Line, k - 1) = Cells(i, k).Value
-                                j = j + 1
-                            Next
-                            Line = Line + 1
-                        End If
-                    ElseIf (sexo <> "" And provincia <> "") Then
-                        If (StrComp(UCase(sexo), UCase(Cells(i, 5).Value)) = 0 And StrComp(provincia, UCase(Cells(i, 7).Value)) = 0) Then
-                            For k = 1 To 15
-                                persona(Line, k - 1) = Cells(i, k).Value
-                                j = j + 1
-                            Next
-                            Line = Line + 1
-                        End If
-                    End If
-            End If
-        Next
-    Next
-End Sub
-Private Sub ListBox1_Click()
-    index = ListBox1.ListIndex
-    valor = ListBox1.Column(0)
-    MsgBox (CStr(index) + vbCr + CStr(valor))
-    'ListBox1.Column(index))
-    m = MsgBox("Desea Modificar este usuario", vbOKCancel)
-    If (m = 1) Then
-        MultiPage1.Pages(2).Visible = True
+
+Sub modificar(ByVal posicion As String)
+    Dim calle As String
+    TextBox162.Value = persona(posicion, 1)
+    TextBox163.Value = persona(posicion, 2)
+    TextBox171.Value = persona(posicion, 3)
+    If (persona(posicion, 4) = Hombre) Then
+        OptionButton5.Value = True
     Else
-        MultiPage1.Pages(2).Visible = False
+        OptionButton6.Value = True
     End If
-End Sub
-Private Sub TextBox11_Change()
-    Frame2.Visible = True
-End Sub
-'carlosnewmusic
-Function comprobarCampos2()
-Dim arr(23) As String
-'RESTO   0   1   2   3   4   5   6   7   8   9   10  11  12  13  14  15  16  17  18  19  20  21  22
-'LETRA   T   R   W   A   G   M   Y   F   P   D   X   B   N   J   Z   S   Q   V   H   L   C   K   E
-arr(0) = "T"
-arr(1) = "R"
-arr(2) = "W"
-arr(3) = "A"
-arr(4) = "G"
-arr(5) = "M"
-arr(6) = "Y"
-arr(7) = "F"
-arr(8) = "P"
-arr(9) = "D"
-arr(10) = "X"
-arr(11) = "B"
-arr(12) = "N"
-arr(13) = "J"
-arr(14) = "Z"
-arr(15) = "S"
-arr(16) = "Q"
-arr(17) = "V"
-arr(18) = "H"
-arr(19) = "L"
-arr(20) = "C"
-arr(21) = "K"
-arr(22) = "E"
-    If (TextBox25 = "") Then
-        msg = msg + "Falta Nombre " + vbCr
-    End If
-    If (TextBox26 = "") Then
-        msg = msg + "Falta Preimer Apellido" + vbCr
-    End If
-    If (TextBox27 = "") Then
-        msg = msg + "Falta Segundo Apellido" + vbCr
-    End If
-    If (OptionButton5.Value = False And OptionButton6.Value = False) Then
-        msg = msg + "Falta Seleccionar sexo" + vbCr
-    End If
-    If (TextBox28 = "") Then
-        msg = msg + "Falta Documento" + ComboBox5.Value + vbCr
-    Else
-        If (Len(TextBox28) = 9) Then
-            Select Case ComboBox5.Value
-                Case "DNI"
-                    Numero = Mid(TextBox4, 1, 8)
-                    LetraF = UCase(Right(TextBox4, 1))
-                    If (IsNumeric(Numero) = True) Then
-                        resto = Int(Numero) Mod (23)
-                        'MsgBox (arr(resto))
-                        If (LetraF <> arr(resto)) Then
-                            msg = msg + "DNI es incorrecto" + vbCr
-                        End If
-                    Else
-                        msg = msg + "Formato DNI es incorrecto" + vbCr
-                    End If
-                Case "NIE"
-                    LetraI = UCase(Left(TextBox28, 1))
-                    
-                    Numero = Mid(TextBox28, 2, 7)
-                    If (IsNumeric(Numero) = True) Then
-                        'MsgBox (Numero)
-                        LetraF = UCase(Right(TextBox28, 1))
-                        Select Case LetraI
-                            Case "X"
-                                nie = "0" + Numero
-                                'MsgBox (nie)
-                                resto = Int(nie) Mod (23)
-                            Case "Y"
-                                nie = "1" + Numero
-                                'MsgBox (nie)
-                                resto = Int(nie) Mod (23)
-                            Case "Z"
-                                nie = "2" + Numero
-                                'MsgBox (nie)
-                                resto = Int(nie) Mod (23)
-                        End Select
-                        'MsgBox (arr(resto))
-                        'resto = Int(TextBox28) Mod (23)
-                        If (LetraF <> arr(resto)) Then
-                            msg = msg + "NIE es incorrecto" + vbCr
-                        Else
-                        
-                        End If
-                    Else
-                        msg = msg + "Formato NIE es incorrecto" + vbCr
-                    End If
-            End Select
+    'Comprobar mujer/hombre
+    TextBox164.Value = persona(posicion, 5)
+    ComboBox6.Value = persona(posicion, 6)
+    ComboBox7.Value = "DNI"
+    TextBox166.Value = persona(posicion, 7)
+    If Left(persona(posicion, 8), 1) = "A" Then
+        ComboBox5.Value = "Avenida"
+        ElseIf Left(persona(posicion, 8), 1) = "C" Then
+            ComboBox5.Value = "Calle"
         Else
-            msg = msg + "Formato del Documento no es correcto" + vbCr
-        End If
+           ComboBox5.Value = "Otro"
     End If
-    If (TextBox29 = "") Then
-        msg = msg + "Falta Ciudad" + vbCr
-    End If
-        If (TextBox30 = "") Then
-        msg = msg + "Falta Direccion" + vbCr
-    End If
-    If (TextBox31 = "") Then
-        msg = msg + "Falta piso" + vbCr
-    End If
-    If (TextBox32 = "") Then
-        msg = msg + "Falta Puerta" + vbCr
-    End If
-    If (TextBox33 = "" Or TextBox34 = "") Then
-        msg = msg + "Falta Codigo Postal" + vbCr
-    Else
-        If ((IsNumeric(TextBox33) = False) Or (IsNumeric(TextBox34) = False)) Then
-            msg = msg + "Codigo Postal debe ser un numero" + vbCr
-        Else
-            If (Len(TextBox34) <> 3) Then
-                msg = msg + "Codigo Postal debe ser un numero de 3 digitos" + vbCr
-            End If
-            If (Len(TextBox33) <> 2) Then
-                msg = msg + "Codigo Postal de provincia debe ser un numero de 2 digitos" + vbCr
-            End If
-        End If
-    End If
-    If (TextBox35 = "") Then
-        msg = msg + "Falta Telefono" + vbCr
-    Else
-        If (IsNumeric(TextBox35) = False) Then
-            msg = msg + "Numero Telefono no puede contener letras" + vbCr
-        ElseIf (Len(TextBox35) <> 9) Then
-            msg = msg + "Numero Telefono no puede contener mas de 9 cifras" + vbCr
-        End If
-    End If
-    If (TextBox36 = "" Or IsDate(TextBox36) = False) Then
-        'Comprobacion fecha
-        msg = msg + "Falta Fecha" + vbCr
-    End If
-    If (TextBox38 = "" Or TextBox15 = "" Or TextBox16 = "" Or TextBox17 = "") Then
-        msg = msg + "Falta Cuenta Bancaria" + vbCr
-    Else
-        If (Len(TextBox38) = 4 And Len(TextBox39) = 4 And Len(TextBox40) = 2 And Len(TextBox41) = 10) Then
-            If (IsNumeric(TextBox38) = False Or IsNumeric(TextBox39) = False Or IsNumeric(TextBox40) = False Or IsNumeric(TextBox41) = False) Then
-                msg = msg + "La cuenta bancaria debe ser numerica" + vbCr
-'            Else
-'                If (Len(TextBox10) <> 3) Then
-'                    msg = msg + "Cuenta bancaria es erronea" + vbCr
-'                End If
-            End If
-        Else
-            msg = msg + "Cuenta bancaria es erronea" + vbCr
-        End If
-    End If
-    comprobarCampos = msg
-End Function
+    p_esp = InStr(1, persona(posicion, 8), " -")
+    TextBox165.Value = Mid(persona(posicion, 8), p_esp + 2)
+    TextBox168.Value = persona(posicion, 9)
+    TextBox169.Value = persona(posicion, 10)
+    TextBox167.Value = Left(persona(posicion, 11), 2)
+    TextBox178.Value = Right(persona(posicion, 11), 3)
+    TextBox177.Value = persona(posicion, 12)
+    TextBox170.Value = persona(posicion, 13)
+    TextBox172.Value = persona(posicion, 0)
+    TextBox173.Value = Mid(persona(posicion, 14), 1, 4)
+    TextBox174.Value = Mid(persona(posicion, 14), 6, 4)
+    TextBox175.Value = Mid(persona(posicion, 14), 11, 2)
+    TextBox176.Value = Mid(persona(posicion, 14), 14, 10)
+    'Mid(cadena, inicio [, longitud])
+End Sub
