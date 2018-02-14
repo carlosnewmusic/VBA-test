@@ -198,6 +198,9 @@ Private Sub CommandButton4_Click()
 End Sub
 
 Private Sub CommandButton5_Click()
+
+    Call comprobarCampos2
+    
     'Buscar posicion que ocupa en la lista
     Dim i As Integer
     Dim posicion As Integer
@@ -348,7 +351,7 @@ Sub Borrar()
     ComboBox1.AddItem "NIE"
     'ComboBox1.AddItem "Pasaporte"
     ComboBox2.AddItem "Calle"
-    ComboBox2.AddItem "Avenide"
+    ComboBox2.AddItem "Avenida"
     ComboBox2.AddItem "Otro"
     ComboBox1.Visible = False
     ComboBox2.Visible = False
@@ -748,3 +751,153 @@ Sub modificar(ByVal posicion As String)
     TextBox176.Value = Mid(persona(posicion, 14), 14, 10)
     'Mid(cadena, inicio [, longitud])
 End Sub
+
+Function comprobarCampos2()
+Dim arr(23) As String
+'RESTO   0   1   2   3   4   5   6   7   8   9   10  11  12  13  14  15  16  17  18  19  20  21  22
+'LETRA   T   R   W   A   G   M   Y   F   P   D   X   B   N   J   Z   S   Q   V   H   L   C   K   E
+arr(0) = "T"
+arr(1) = "R"
+arr(2) = "W"
+arr(3) = "A"
+arr(4) = "G"
+arr(5) = "M"
+arr(6) = "Y"
+arr(7) = "F"
+arr(8) = "P"
+arr(9) = "D"
+arr(10) = "X"
+arr(11) = "B"
+arr(12) = "N"
+arr(13) = "J"
+arr(14) = "Z"
+arr(15) = "S"
+arr(16) = "Q"
+arr(17) = "V"
+arr(18) = "H"
+arr(19) = "L"
+arr(20) = "C"
+arr(21) = "K"
+arr(22) = "E"
+    If (TextBox162 = "") Then
+        msg = msg + "Falta Nombre " + vbCr
+    End If
+    If (TextBox163 = "") Then
+        msg = msg + "Falta Preimer Apellido" + vbCr
+    End If
+    If (TextBox171 = "") Then
+        msg = msg + "Falta Segundo Apellido" + vbCr
+    End If
+    If (OptionButton5.Value = False And OptionButton6.Value = False) Then
+        msg = msg + "Falta Seleccionar sexo" + vbCr
+    End If
+    If (TextBox164 = "") Then
+        msg = msg + "Falta Documento" + ComboBox7.Value + vbCr
+    Else
+        If (Len(TextBox164) = 9) Then
+            Select Case ComboBox7.Value
+                Case "DNI"
+                    Numero = Mid(TextBox164, 1, 8)
+                    LetraF = UCase(Right(TextBox164, 1))
+                    If (IsNumeric(Numero) = True) Then
+                        resto = Int(Numero) Mod (23)
+                        'MsgBox (arr(resto))
+                        If (LetraF <> arr(resto)) Then
+                            msg = msg + "DNI es incorrecto" + vbCr
+                        End If
+                    Else
+                        msg = msg + "Formato DNI es incorrecto" + vbCr
+                    End If
+                Case "NIE"
+                    LetraI = UCase(Left(TextBox164, 1))
+                    
+                    Numero = Mid(TextBox164, 2, 7)
+                    If (IsNumeric(Numero) = True) Then
+                        'MsgBox (Numero)
+                        LetraF = UCase(Right(TextBox164, 1))
+                        Select Case LetraI
+                            Case "X"
+                                nie = "0" + Numero
+                                'MsgBox (nie)
+                                resto = Int(nie) Mod (23)
+                            Case "Y"
+                                nie = "1" + Numero
+                                'MsgBox (nie)
+                                resto = Int(nie) Mod (23)
+                            Case "Z"
+                                nie = "2" + Numero
+                                'MsgBox (nie)
+                                resto = Int(nie) Mod (23)
+                        End Select
+                        'MsgBox (arr(resto))
+                        'resto = Int(TextBox28) Mod (23)
+                        If (LetraF <> arr(resto)) Then
+                            msg = msg + "NIE es incorrecto" + vbCr
+                        Else
+                        
+                        End If
+                    Else
+                        msg = msg + "Formato NIE es incorrecto" + vbCr
+                    End If
+            End Select
+        Else
+            msg = msg + "Formato del Documento no es correcto" + vbCr
+        End If
+    End If
+    If (TextBox166 = "") Then
+        msg = msg + "Falta Ciudad" + vbCr
+    End If
+        If (TextBox165 = "") Then
+        msg = msg + "Falta Direccion" + vbCr
+    End If
+    If (TextBox168 = "") Then
+        msg = msg + "Falta piso" + vbCr
+    End If
+    If (TextBox169 = "") Then
+        msg = msg + "Falta Puerta" + vbCr
+    End If
+    If (TextBox167 = "" Or TextBox178 = "") Then
+        msg = msg + "Falta Codigo Postal" + vbCr
+    Else
+        If ((IsNumeric(TextBox167) = False) Or (IsNumeric(TextBox178) = False)) Then
+            msg = msg + "Codigo Postal debe ser un numero" + vbCr
+        Else
+            If (Len(TextBox178) <> 3) Then
+                msg = msg + "Codigo Postal debe ser un numero de 3 digitos" + vbCr
+            End If
+            If (Len(TextBox167) <> 2) Then
+                msg = msg + "Codigo Postal de provincia debe ser un numero de 2 digitos" + vbCr
+            End If
+        End If
+    End If
+    If (TextBox177 = "") Then
+        msg = msg + "Falta Telefono" + vbCr
+    Else
+        If (IsNumeric(TextBox177) = False) Then
+            msg = msg + "Numero Telefono no puede contener letras" + vbCr
+        ElseIf (Len(TextBox177) <> 9) Then
+            msg = msg + "Numero Telefono no puede contener mas de 9 cifras" + vbCr
+        End If
+    End If
+    If (TextBox177 = "" Or IsDate(TextBox177) = False) Then
+        'Comprobacion fecha
+        msg = msg + "Falta Fecha" + vbCr
+    End If
+    
+    If (TextBox173 = "" Or TextBox174 = "" Or TextBox175 = "" Or TextBox176 = "") Then
+        msg = msg + "Falta Cuenta Bancaria" + vbCr
+    Else
+        If (Len(TextBox173) = 4 And Len(TextBox174) = 4 And Len(TextBox175) = 2 And Len(TextBox176) = 10) Then
+            If (IsNumeric(TextBox173) = False Or IsNumeric(TextBox174) = False Or IsNumeric(TextBox175) = False Or IsNumeric(TextBox176) = False) Then
+                msg = msg + "La cuenta bancaria debe ser numerica" + vbCr
+'            Else
+'                If (Len(TextBox10) <> 3) Then
+'                    msg = msg + "Cuenta bancaria es erronea" + vbCr
+'                End If
+            End If
+        Else
+            msg = msg + "Cuenta bancaria es erronea" + vbCr
+        End If
+    End If
+    comprobarCampos2 = msg
+End Function
